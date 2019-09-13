@@ -52,7 +52,7 @@ from .modeling_transfo_xl import (TransfoXLPreTrainedModel, TransfoXLModel, Tran
                                   load_tf_weights_in_transfo_xl, TRANSFO_XL_PRETRAINED_MODEL_ARCHIVE_MAP)
 from .modeling_gpt2 import (GPT2PreTrainedModel, GPT2Model,
                             GPT2LMHeadModel, GPT2DoubleHeadsModel,
-                            load_tf_weights_in_gpt2, GPT2_PRETRAINED_MODEL_ARCHIVE_MAP,GPT2ForSequenceClassification)
+                            load_tf_weights_in_gpt2, GPT2ForSequenceClassification, GPT2_PRETRAINED_MODEL_ARCHIVE_MAP)
 from .modeling_xlnet import (XLNetPreTrainedModel, XLNetModel, XLNetLMHeadModel,
                              XLNetForSequenceClassification, XLNetForQuestionAnswering,
                              load_tf_weights_in_xlnet, XLNET_PRETRAINED_MODEL_ARCHIVE_MAP)
