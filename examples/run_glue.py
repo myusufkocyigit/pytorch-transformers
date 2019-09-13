@@ -33,6 +33,8 @@ from tqdm import tqdm, trange
 
 from pytorch_transformers import (WEIGHTS_NAME, BertConfig,
                                   BertForSequenceClassification, BertTokenizer,
+                                  GPT2Config, GPT2Tokenizer,
+                                  GPT2ForSequenceClassification,
                                   RobertaConfig,
                                   RobertaForSequenceClassification,
                                   RobertaTokenizer,
@@ -55,6 +57,7 @@ MODEL_CLASSES = {
     'xlnet': (XLNetConfig, XLNetForSequenceClassification, XLNetTokenizer),
     'xlm': (XLMConfig, XLMForSequenceClassification, XLMTokenizer),
     'roberta': (RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer),
+    'gpt2':(GPT2Config, GPT2ForSequenceClassification, GPT2Tokenizer)
 }
 
 
@@ -126,10 +129,11 @@ def train(args, train_dataset, model, tokenizer):
         for step, batch in enumerate(epoch_iterator):
             model.train()
             batch = tuple(t.to(args.device) for t in batch)
-            inputs = {'input_ids':      batch[0],
-                      'attention_mask': batch[1],
-                      'token_type_ids': batch[2] if args.model_type in ['bert', 'xlnet'] else None,  # XLM and RoBERTa don't use segment_ids
-                      'labels':         batch[3]}
+            inputs = {'input_ids1':      batch[0],
+                      'input_ids2':      batch[1]
+                      'attention_mask': batch[2],
+                      'token_type_ids': batch[3] if args.model_type in ['bert', 'xlnet', 'gpt2'] else None,  # XLM and RoBERTa don't use segment_ids
+                      'labels':         batch[4]}
             outputs = model(**inputs)
             loss = outputs[0]  # model outputs are always tuple in pytorch-transformers (see doc)
 

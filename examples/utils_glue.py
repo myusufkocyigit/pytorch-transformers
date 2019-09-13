@@ -467,6 +467,25 @@ def convert_examples_to_features(examples, label_list, max_seq_length,
             segment_ids = [cls_token_segment_id] + segment_ids
 
         input_ids = tokenizer.convert_tokens_to_ids(tokens)
+        
+        tokens2 = tokens_b + [sep_token]
+        if sep_token_extra:
+            # roberta uses an extra separator b/w pairs of sentences
+            tokens2 += [sep_token]
+        segment_ids2 = [sequence_a_segment_id] * len(tokens2)
+        
+        if tokens_a:
+            tokens2 += tokens_a + [sep_token]
+            segment_ids2 += [sequence_b_segment_id] * (len(tokens_a) + 1)
+
+        if cls_token_at_end:
+            tokens2 = tokens2 + [cls_token]
+            segment_ids2 = segment_ids2 + [cls_token_segment_id]
+        else:
+            tokens2 = [cls_token] + tokens2
+            segment_ids2 = [cls_token_segment_id] + segment_ids2
+
+        input_ids2 = tokenizer.convert_tokens_to_ids(tokens2)
 
         # The mask has 1 for real tokens and 0 for padding tokens. Only real
         # tokens are attended to.
@@ -478,11 +497,18 @@ def convert_examples_to_features(examples, label_list, max_seq_length,
             input_ids = ([pad_token] * padding_length) + input_ids
             input_mask = ([0 if mask_padding_with_zero else 1] * padding_length) + input_mask
             segment_ids = ([pad_token_segment_id] * padding_length) + segment_ids
+            input_ids2 = ([pad_token] * padding_length) + input_ids2
+            input_mask = ([0 if mask_padding_with_zero else 1] * padding_length) + input_mask
+            segment_ids2 = ([pad_token_segment_id] * padding_length) + segment_ids2
         else:
             input_ids = input_ids + ([pad_token] * padding_length)
             input_mask = input_mask + ([0 if mask_padding_with_zero else 1] * padding_length)
             segment_ids = segment_ids + ([pad_token_segment_id] * padding_length)
-
+            input_ids2 = input_ids2 + ([pad_token] * padding_length)
+            input_mask = input_mask + ([0 if mask_padding_with_zero else 1] * padding_length)
+            segment_ids2 = segment_ids2 + ([pad_token_segment_id] * padding_length)
+    
+    
         assert len(input_ids) == max_seq_length
         assert len(input_mask) == max_seq_length
         assert len(segment_ids) == max_seq_length
@@ -505,7 +531,8 @@ def convert_examples_to_features(examples, label_list, max_seq_length,
             logger.info("label: %s (id = %d)" % (example.label, label_id))
 
         features.append(
-                InputFeatures(input_ids=input_ids,
+                InputFeatures(input_ids1=input_ids,
+                              input_ids2=input_ids2,
                               input_mask=input_mask,
                               segment_ids=segment_ids,
                               label_id=label_id))
